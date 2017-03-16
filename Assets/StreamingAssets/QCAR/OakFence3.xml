@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QCARConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="qcar_config.xsd">
+  <Tracking>
+    <ImageTarget name="holly1" size="247.000000 161.868927" />
+    <ImageTarget name="ofp_book6" size="247.000000 138.825897" />
+    <ImageTarget name="ofp_book8" size="247.000000 138.993362" />
+    <ImageTarget name="ofp_book7" size="247.000000 138.909592" />
+    <ImageTarget name="ofp_book5" size="247.000000 139.836777" />
+    <ImageTarget name="ofp_book4" size="247.000000 164.607864" />
+    <ImageTarget name="ofp_book3" size="247.000000 164.607864" />
+    <ImageTarget name="ofp_book2" size="247.000000 138.909592" />
+    <ImageTarget name="ofp_book1" size="247.000000 138.909592" />
+    <ImageTarget name="sloane1" size="247.000000 164.607864" />
+    <ImageTarget name="stellium6" size="247.000000 185.250000" />
+    <ImageTarget name="stellium5" size="247.000000 185.250000" />
+    <ImageTarget name="stellium4" size="247.000000 185.250000" />
+    <ImageTarget name="stellium3" size="247.000000 185.250000" />
+    <ImageTarget name="stellium2" size="247.000000 185.250000" />
+    <ImageTarget name="stellium1" size="247.000000 185.250000" />
+    <ImageTarget name="britt3" size="243.000000 364.500000" />
+    <ImageTarget name="benjamin1" size="247.000000 154.786667" />
+    <ImageTarget name="tyrone" size="247.000000 185.073578" />
+    <ImageTarget name="tonea1" size="247.000000 164.607864" />
+    <ImageTarget name="sunshine1" size="247.000000 164.607864" />
+    <ImageTarget name="silas1" size="247.000000 164.607864" />
+    <ImageTarget name="fantastic6" size="247.000000 164.607864" />
+    <ImageTarget name="fantastic5" size="247.000000 164.607864" />
+    <ImageTarget name="fantastic4" size="247.000000 138.937500" />
+    <ImageTarget name="fantastic3" size="247.000000 164.607864" />
+    <ImageTarget name="fantastic2" size="247.000000 164.607864" />
+    <ImageTarget name="fantastic1" size="247.000000 164.607864" />
+    <ImageTarget name="britt2" size="247.000000 164.607864" />
+    <ImageTarget name="britt1" size="247.000000 164.607864" />
+  </Tracking>
+</QCARConfig>
