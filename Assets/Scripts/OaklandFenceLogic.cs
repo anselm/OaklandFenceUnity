@@ -1,5 +1,7 @@
 ﻿
 using UnityEngine;
+using UnityEngine.Events;
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
@@ -7,6 +9,9 @@ using System.Xml;
 namespace Vuforia {
 
 	public class OaklandFenceLogic : MonoBehaviour {
+
+        public UnityEvent OnEndBumperStartEvent;
+        public UnityEvent OnEndBumperFinishEvent;
 
 		public GameObject CameraObject;
 
@@ -184,6 +189,7 @@ namespace Vuforia {
 				case MediaPlayerCtrl.MEDIAPLAYER_STATE.END:
 					Debug.Log("OaklandFence: state 2->3: Video hit end - showing end bumper");
                     touched = false;
+                            OnEndBumperStartEvent.Invoke();
                     stateSet(3,bumperMaterialHandle,1);
                     break;
 
@@ -215,6 +221,7 @@ namespace Vuforia {
         	    if(playCount > 60*5) {
 					Debug.Log("OaklandFence: state 3->4: Bumper done - going to fade");
                 	stateSet(4,bumperMaterialHandle,1);
+                        OnEndBumperFinishEvent.Invoke();
             	}
             	bumperTouch();
 				break;
