@@ -513,6 +513,7 @@ namespace Vuforia {
 		string imagemimetype = ".png";
 
 		IEnumerator MaterialsInit() {
+            string path = "";
 
 			// Fetch version information
 			if(true) {
@@ -535,13 +536,13 @@ namespace Vuforia {
 			// Update database?
 			if(databaseNameRemote.CompareTo(databaseNameLocal) != 0) {
 				string url = "http://" + serverName + "/" + databaseNameRemote + ".xml";
-				string path = databaseNameRemote + ".xml";
+                path = System.IO.Path.Combine(Application.persistentDataPath, databaseNameRemote + ".xml");
 				var www = new WWW(url);
 				yield return www;
 			    System.IO.File.WriteAllBytes(path,www.bytes);
 			    Debug.Log("Caching Trackables - saved database " + path );
 				url = "http://" + serverName + "/" + databaseNameRemote + ".dat";
-				path = databaseNameRemote + ".dat";
+                path = System.IO.Path.Combine(Application.persistentDataPath, databaseNameRemote + ".dat");
 				www = new WWW(url);
 				yield return www;
 			    System.IO.File.WriteAllBytes(path,www.bytes);
@@ -551,9 +552,10 @@ namespace Vuforia {
 
 			// Update material cache?
 			{
-				string name,url,path;
-				XmlDocument xml = new XmlDocument();
-				xml.Load(databaseNameRemote+".xml");
+				string name,url;
+                XmlDocument xml = new XmlDocument();
+                path = System.IO.Path.Combine(Application.persistentDataPath, databaseNameRemote + ".xml");
+                xml.Load(path);
 				XmlNodeList nodes = xml.DocumentElement.SelectNodes("/QCARConfig/Tracking/ImageTarget");
 				for(int i = 0; i < nodes.Count; i++) {
 					name = nodes[i].Attributes["name"].Value;
@@ -571,9 +573,11 @@ namespace Vuforia {
 
 			// Update material cache for bumpers?
 			{
-				string name,url,path;
-				XmlDocument xml = new XmlDocument();
-				xml.Load(databaseNameRemote+".xml");
+				string name,url;
+                XmlDocument xml = new XmlDocument();
+                path = System.IO.Path.Combine(Application.persistentDataPath, databaseNameRemote + ".xml");
+
+				xml.Load(path);
 				XmlNodeList nodes = xml.DocumentElement.SelectNodes("/QCARConfig/Tracking/ImageTarget");
 				for(int i = 0; i < nodes.Count; i++) {
 					name = nodes[i].Attributes["name"].Value;
@@ -591,8 +595,9 @@ namespace Vuforia {
 
 			// Inject into Vuforia
 			ObjectTracker tracker = Vuforia.TrackerManager.Instance.GetTracker<Vuforia.ObjectTracker>();
-			DataSet dataset = tracker.CreateDataSet();
-			if(!dataset.Load(databaseNameRemote)) {
+            DataSet dataset = tracker.CreateDataSet();
+            path = System.IO.Path.Combine(Application.persistentDataPath, databaseNameRemote + ".xml");
+            if(!dataset.Load(path, VuforiaUnity.StorageType.STORAGE_ABSOLUTE)) {
 				Debug.Log("Caching system - Failed to load dataset?");
 				yield break;
 			}
