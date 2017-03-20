@@ -23,7 +23,21 @@ namespace Vuforia {
 		const int FRAMES_DURING_ZOOM = 5;
 
 		bool touched = false;
-		int playState = -2;
+		int _playState = -2;
+        int playState
+        {
+            get
+            {
+                return _playState;
+            }
+
+            set
+            {
+                Debug.Log("playState = " + value, this);
+                _playState = value;
+            }
+        }
+
 		int playCode = 0;
 		int playCount = 0;
 		string playName = null;
@@ -61,11 +75,52 @@ namespace Vuforia {
 			HandleVuforiaRecognition();
 		}
 
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// Public API 
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        public void SupportButtonClickHandler()
+        {
+            Debug.Log("Support", this);
+        }
+
+        public void LearnMoreButtonClickHandler()
+        {
+            Debug.Log("Learn", this);
+        }
+
+        public void JoinButtonClickHandler()
+        {
+            Debug.Log("Join", this);
+        }
+
+        public void HomeButtonClickHandler()
+        {
+            Debug.Log("Home", this);
+        }
+
+
+        public void ReplayButtonClickHandler()
+        {
+            Debug.Log("Replay", this);
+
+            videoPlayerHelper.Load("http://" + serverName2 + "/" + playName + ".mp4" );
+
+            OnEndBumperFinishEvent.Invoke();
+            stateSet(5, videoMaterialHandle, 1);
+        }
+
+
+
 		///////////////////////////////////////////////////////////////////////////////////////////////////////
         /// State Machine
 		///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		void stateSet(int state, Material material, float slerp) {
+            Debug.Log("stateSet: "  + state + "//" + slerp, this);
+
+
 			playState = state;
 			playCount = 0;
 			playCode = -1;
@@ -88,17 +143,17 @@ namespace Vuforia {
 				return;
 			}*/
 
-	        if (Input.touchCount > 0) {
-	        	touched = true;
-	        	// Input.GetTouch(0);
-	        	Debug.Log("Got touched");
-	        }
-
-#if UNITY_EDITOR
-			if( Input.GetMouseButtonDown(0) ) {
-				touched = true;
-			}
-#endif
+//	        if (Input.touchCount > 0) {
+//	        	touched = true;
+//	        	// Input.GetTouch(0);
+//	        	Debug.Log("Got touched");
+//	        }
+//
+//#if UNITY_EDITOR
+//			if( Input.GetMouseButtonDown(0) ) {
+//				touched = true;
+//			}
+//#endif
 
 			switch(playState) {
 			case -2:
@@ -237,6 +292,14 @@ namespace Vuforia {
 	            }
 				break;
 
+                case 5:
+                    // replaying, wait for media 
+                    if(videoPlayerHelper.GetCurrentState() != MediaPlayerCtrl.MEDIAPLAYER_STATE.END)
+                    {
+                            stateSet(2, videoMaterialHandle, 1);
+                    }
+                    break;
+            
 			case 999:
 	            playSlerp = playSlerp - 0.1f; if(playSlerp<0) playSlerp = 0;
     	        playState = -1;
