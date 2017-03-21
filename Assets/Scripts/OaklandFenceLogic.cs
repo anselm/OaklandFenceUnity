@@ -6,6 +6,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 
+using Prime31;
+
 namespace Vuforia {
 
 	public class OaklandFenceLogic : MonoBehaviour {
@@ -15,7 +17,9 @@ namespace Vuforia {
 
 		public GameObject CameraObject;
 
+        [SerializeField]
 		string serverName = "oaklandfenceproject.org.s3-website-us-west-1.amazonaws.com";
+        [SerializeField]
 		string serverName2 = "s3-us-west-1.amazonaws.com/oaklandfenceproject.org";
 
 		const int DISTANCE = 500;
@@ -69,6 +73,7 @@ namespace Vuforia {
     		mr = GetComponent<MeshRenderer>();
 			videoMaterialHandle = mr.material;
 			StartCoroutine(MaterialsInit());
+            //SetupWebView();
 		}
 	
 		void Update () {
@@ -82,22 +87,29 @@ namespace Vuforia {
 
         public void SupportButtonClickHandler()
         {
+            EtceteraAndroid.showWebView( "http://" + serverName + "/support.html" );
             Debug.Log("Support", this);
         }
 
         public void LearnMoreButtonClickHandler()
         {
+            EtceteraAndroid.showWebView( "http://" + serverName +"/learn.html" );
             Debug.Log("Learn", this);
         }
 
         public void JoinButtonClickHandler()
         {
+            EtceteraAndroid.showWebView("http://" + serverName + "/join.html");
             Debug.Log("Join", this);
         }
 
         public void HomeButtonClickHandler()
         {
+            // Clear everything from the screen.. .
             Debug.Log("Home", this);
+
+            stateSet(4,bumperMaterialHandle,1);
+            OnEndBumperFinishEvent.Invoke();
         }
 
 
@@ -316,7 +328,7 @@ namespace Vuforia {
 
 			// Render something?
     		if(currentMaterialHandle == null) {
-    			Debug.Log("no material - exiting");
+    			//Debug.Log("no material - exiting");
     			mr.enabled = false;
     			return;
     		} else {
@@ -709,5 +721,25 @@ namespace Vuforia {
 		    Debug.Log("OaklandFence: MaterialGet: loaded from server " + name + " " + texture.width + " " + texture.height );
 		    return material;
 		}
+
+
+        void SetupWebView()
+        {
+            
+        }
+
+
+        void WebViewJsCallback(string obj)
+        {
+            Debug.Log("WebViewJsCallback:" + obj, this);
+        }
+        void WebViewErrorCallback(string obj)
+        {
+            Debug.Log("WebViewErrorCallback:" + obj, this);
+        }
+        void WebViewLoadedCallback(string obj)
+        {
+            Debug.Log("WebViewLoadedCallback:" + obj, this);
+        }
 	}
 }
