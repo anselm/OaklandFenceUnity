@@ -42,24 +42,21 @@ public class State_PostVideoUIHandler : MonoBehaviour {
     public void SupportButtonClickHandler()
     {
         if(!this.enabled) return;
-
-        EtceteraAndroid.showWebView( "http://" + data.serverName + "/support.html" );
+        WebViewHelper("support");
         Debug.Log("Support", this);
     }
 
     public void LearnMoreButtonClickHandler()
     {
         if(!this.enabled) return;
-
-        EtceteraAndroid.showWebView( "http://" + data.serverName +"/learn.html" );
+        WebViewHelper(data.trackableName);
         Debug.Log("Learn", this);
     }
 
     public void JoinButtonClickHandler()
     {
         if(!this.enabled) return;
-
-        EtceteraAndroid.showWebView("http://" + data.serverName + "/join.html");
+        WebViewHelper("Join");
         Debug.Log("Join", this);
     }
 
@@ -92,7 +89,12 @@ public class State_PostVideoUIHandler : MonoBehaviour {
 
     #endregion
 
-
+    void WebViewHelper(string loc)
+    {
+        string url = string.Format("http://{0}/{1}.html", data.serverName, loc);
+        Debug.Log("URL: " + url, this);
+        EtceteraAndroid.showWebView(url);
+    }
 
     void UpdateReferences()
     {
