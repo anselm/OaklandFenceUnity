@@ -15,32 +15,43 @@ public class State_Data : MonoBehaviour {
 
 
     [Header("Current Trackable")]
+    [Tooltip("Name that is returned from Vuforia. Used for all the texture lookups, URLs etc.")]
     public string trackableName;
+    [Tooltip("Used to set the aspect ratio of the mesh")]
     public float trackableAspectRatio;
-    public const string BUMPERPOSTFIX = "-bumper"; // Don't change this! Will break existing cached references. 
-    public const string PRECACHE = "preCache"; // For images that ship with the apk
 
-    [Header("Meshs")]
+    public const string BUMPERPOSTFIX = "-bumper"; // Don't change this! Will break existing cached references. 
+
+    [Header("Static Image")]
     public GameObject staticImage;
     public MeshRenderer staticImageMeshRenderer;
     public FullScreenQuad staticFullScreenQuad;
 
+    public Texture2D defaultTexture;
+
+    [Header("Video")]
+
     public GameObject videoImage;
     public MeshRenderer videoImageMeshRenderer;
     public FullScreenQuad videoFullScreenQuad;
+    [Tooltip("How far the videoImage game object is 'down' from the static image game object.")]
     public float videoImageDistanceOffset = 1;
 
     public MediaPlayerCtrl mpc;
 
     public GameObject blocker;
-    public Texture2D defaultTexture;
+    [Tooltip("How long, once the video is playing, do we wait to show the blocker. Tried to time it for when the video switches aspect ratios.")]
+    public float delayToShowBlocker = .5f;
+    public GameObject videoSkipGameObject;
 
     [Header("Camera Movement")]
     public GameObject arGameObject;
     public Camera arCamera;
     public Camera zoomCamera;
     public Transform endPosition;
+    [Tooltip("I'm not sure why, but you have to make the static image this size for it to match the size of the target in the AR Camera.")]
     public float staticImageStartDistance = 250;
+    [Tooltip("This is the final distance/size that the static image is set too, to make it take up the whole screen.")]
     public float staticImageEndDistance = 101;
 
     [Tooltip("This is how many frames it takes to move from the 'target detected' position, to the 'full frame' position. NOTE changing this also changes the 'delay to show bloacker' time.")]
@@ -48,19 +59,21 @@ public class State_Data : MonoBehaviour {
     [Tooltip("This is how many frames the frade between the static placeholder image and the video takes.")]
     public int framesForAlphaFade = 10;
 
-    [Header("Video")]
-    public float delayToShowBlocker = .5f;
-    public GameObject videoSkipGameObject;
 
     [Header("Other")]
+    [Tooltip("The 'start of app' info screen GFX")]
     public Texture startingTexture;
+    [Tooltip("How long to keep the start of app GFX up.")]
     public float minStartingImageTime = 5f;
     public GameObject postVideoUIGameObject;
 
-
+    [Tooltip("Images which are going to be used by the DB. Can be updated as the app is updated. Is superseeded when a new BD is uploaded to Amazon, although if the images are named the same, will keep using them.")]
     public Texture2D[] textureCache;
+    [Tooltip("Pre-cached vuforia DB XML file")]
     public TextAsset vuforiaXML;
+    [Tooltip("Pre-cached vuforia DB DAT file. NOTE you have to add .txt to the end of it for Unity to recognize it.")]
     public TextAsset vuforiaDB;
+
 
     Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
     string imagemimetype = ".png";
