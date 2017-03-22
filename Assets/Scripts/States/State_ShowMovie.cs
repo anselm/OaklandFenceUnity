@@ -9,6 +9,7 @@ public class State_ShowMovie : MonoBehaviour {
     [SerializeField]
     State_ShowPostVideoImage nextState;
 
+    int alphaCounter = 0;
 
     #region UNITY
 
@@ -44,6 +45,23 @@ public class State_ShowMovie : MonoBehaviour {
 
 	}
 	
+
+    void Update()
+    {
+        if(alphaCounter > 0)
+        {
+            alphaCounter--;
+            var colour = data.staticImageMeshRenderer.material.color;
+            colour.a = alphaCounter/(float)data.framesForAlphaFade;
+            data.staticImageMeshRenderer.material.color = colour;
+            if(alphaCounter == 0)
+            {
+                data.staticImageMeshRenderer.enabled = false;
+            }
+        }    
+    }
+
+
     void OnDisable()
     {
         Debug.Log("Show Movie End", this);
@@ -53,6 +71,8 @@ public class State_ShowMovie : MonoBehaviour {
         data.mpc.OnVideoFirstFrameReady = null;
         data.mpc.OnReady = null;
         data.mpc.OnEnd = null;
+
+        data.staticImageMeshRenderer.material.color = Color.white;
 
         data.blocker.SetActive(true);
         data.videoSkipGameObject.SetActive(false);
@@ -90,7 +110,7 @@ public class State_ShowMovie : MonoBehaviour {
         Debug.Log("Video First Frame Ready", this);
         data.mpc.OnVideoFirstFrameReady = null;
         data.videoImageMeshRenderer.enabled = true;
-        data.staticImageMeshRenderer.enabled = false;
+        alphaCounter = data.framesForAlphaFade;
 
         Invoke("ShowBlocker", data.delayToShowBlocker);
 

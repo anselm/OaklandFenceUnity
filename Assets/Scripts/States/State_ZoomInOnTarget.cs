@@ -42,10 +42,13 @@ public class State_ZoomInOnTarget : MonoBehaviour {
         data.zoomCamera.gameObject.transform.rotation = Quaternion.Slerp(_startRot, data.endPosition.rotation, _currentPercentage);
         data.zoomCamera.gameObject.transform.position = Vector3.Lerp(_startPos, data.endPosition.position, _currentPercentage);
         data.staticFullScreenQuad.distY = Mathf.Lerp(data.staticImageStartDistance, data.staticImageEndDistance, _currentPercentage);
-        data.videoFullScreenQuad.distY = data.staticFullScreenQuad.distY + 10;
+        data.videoFullScreenQuad.distY = data.staticFullScreenQuad.distY + data.videoImageDistanceOffset;
 
         // Get to the video playback asap.
-        if(data.mpc.GetCurrentState() == MediaPlayerCtrl.MEDIAPLAYER_STATE.READY) this.nextState.enabled = true;
+        if(data.mpc.GetCurrentState() == MediaPlayerCtrl.MEDIAPLAYER_STATE.READY)
+        {
+            this.nextState.enabled = true;
+        }
 
         _currentFrames++;
 

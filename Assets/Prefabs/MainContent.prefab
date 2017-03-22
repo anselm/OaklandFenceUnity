@@ -495,7 +495,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1373864512816388}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -10, z: 0}
+  m_LocalPosition: {x: 0, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4021071802165824}
@@ -812,7 +812,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c3af716a2f27482998fc808d0d703ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  distY: 121
+  distY: 122
   cam: {fileID: 20659101303879240}
   updatePosition: 0
   updateRotation: 0
@@ -853,6 +853,7 @@ MonoBehaviour:
   videoImage: {fileID: 1373864512816388}
   videoImageMeshRenderer: {fileID: 23490996714126026}
   videoFullScreenQuad: {fileID: 114391505019830660}
+  videoImageDistanceOffset: 1
   mpc: {fileID: 114684914314257720}
   blocker: {fileID: 1902249109578390}
   defaultTexture: {fileID: 2800000, guid: 9b37bb0c1b4074af69e138e4e017de14, type: 3}
@@ -863,6 +864,7 @@ MonoBehaviour:
   staticImageStartDistance: 250
   staticImageEndDistance: 101
   framesForZoom: 90
+  framesForAlphaFade: 10
   delayToShowBlocker: 3.25
   videoSkipGameObject: {fileID: 1100574896049346}
   startingTexture: {fileID: 2800000, guid: 1d240ec0b41034eafb23258876425b03, type: 3}
@@ -1203,7 +1205,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c3af716a2f27482998fc808d0d703ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  distY: 111
+  distY: 101
   cam: {fileID: 20659101303879240}
   updatePosition: 0
   updateRotation: 0

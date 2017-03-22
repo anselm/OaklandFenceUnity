@@ -28,6 +28,8 @@ public class State_Data : MonoBehaviour {
     public GameObject videoImage;
     public MeshRenderer videoImageMeshRenderer;
     public FullScreenQuad videoFullScreenQuad;
+    public float videoImageDistanceOffset = 1;
+
     public MediaPlayerCtrl mpc;
 
     public GameObject blocker;
@@ -41,7 +43,10 @@ public class State_Data : MonoBehaviour {
     public float staticImageStartDistance = 250;
     public float staticImageEndDistance = 101;
 
+    [Tooltip("This is how many frames it takes to move from the 'target detected' position, to the 'full frame' position. NOTE changing this also changes the 'delay to show bloacker' time.")]
     public int framesForZoom = 30;
+    [Tooltip("This is how many frames the frade between the static placeholder image and the video takes.")]
+    public int framesForAlphaFade = 10;
 
     [Header("Video")]
     public float delayToShowBlocker = .5f;

@@ -44,6 +44,7 @@ public class State_Setup : MonoBehaviour {
         data.zoomCamera.enabled = true;
 
         data.staticImageMeshRenderer.material.mainTexture = data.startingTexture;
+
         data.staticFullScreenQuad.aspect = data.startingTexture.width/(float)data.startingTexture.height;
         data.staticFullScreenQuad.distY = data.staticImageEndDistance;
 
