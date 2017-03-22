@@ -850,13 +850,15 @@ MonoBehaviour:
   staticImage: {fileID: 1555165545456124}
   staticImageMeshRenderer: {fileID: 23435235045777840}
   staticFullScreenQuad: {fileID: 114191868559757652}
+  defaultTexture: {fileID: 2800000, guid: 9b37bb0c1b4074af69e138e4e017de14, type: 3}
   videoImage: {fileID: 1373864512816388}
   videoImageMeshRenderer: {fileID: 23490996714126026}
   videoFullScreenQuad: {fileID: 114391505019830660}
   videoImageDistanceOffset: 1
   mpc: {fileID: 114684914314257720}
   blocker: {fileID: 1902249109578390}
-  defaultTexture: {fileID: 2800000, guid: 9b37bb0c1b4074af69e138e4e017de14, type: 3}
+  delayToShowBlocker: 3.25
+  videoSkipGameObject: {fileID: 1100574896049346}
   arGameObject: {fileID: 0}
   arCamera: {fileID: 0}
   zoomCamera: {fileID: 20659101303879240}
@@ -865,8 +867,6 @@ MonoBehaviour:
   staticImageEndDistance: 101
   framesForZoom: 90
   framesForAlphaFade: 10
-  delayToShowBlocker: 3.25
-  videoSkipGameObject: {fileID: 1100574896049346}
   startingTexture: {fileID: 2800000, guid: 1d240ec0b41034eafb23258876425b03, type: 3}
   minStartingImageTime: 5
   postVideoUIGameObject: {fileID: 1190132064467568}

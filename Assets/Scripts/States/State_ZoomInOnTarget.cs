@@ -44,7 +44,7 @@ public class State_ZoomInOnTarget : MonoBehaviour {
         data.staticFullScreenQuad.distY = Mathf.Lerp(data.staticImageStartDistance, data.staticImageEndDistance, _currentPercentage);
         data.videoFullScreenQuad.distY = data.staticFullScreenQuad.distY + data.videoImageDistanceOffset;
 
-        // Get to the video playback asap.
+        // Get to the video playback asap. even if we are still zooming!
         if(data.mpc.GetCurrentState() == MediaPlayerCtrl.MEDIAPLAYER_STATE.READY)
         {
             this.nextState.enabled = true;
