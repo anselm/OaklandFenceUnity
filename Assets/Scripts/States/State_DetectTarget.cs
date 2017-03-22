@@ -34,8 +34,6 @@ public class State_DetectTarget : MonoBehaviour {
 
         var trackable = activeTrackables[0];
 
-        var size = trackable.GetComponent<ImageTargetAbstractBehaviour>().GetSize();
-
 
         var image = data.TextureGet(trackable.TrackableName);
 
