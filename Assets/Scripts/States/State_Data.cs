@@ -18,7 +18,7 @@ public class State_Data : MonoBehaviour {
     public string trackableName;
     public float trackableAspectRatio;
     public const string BUMPERPOSTFIX = "-bumper"; // Don't change this! Will break existing cached references. 
-
+    public const string PRECACHE = "preCache"; // For images that ship with the apk
 
     [Header("Meshs")]
     public GameObject staticImage;
@@ -52,6 +52,11 @@ public class State_Data : MonoBehaviour {
     public float minStartingImageTime = 5f;
     public GameObject postVideoUIGameObject;
 
+
+    public Texture2D[] textureCache;
+    public TextAsset vuforiaXML;
+    public TextAsset vuforiaDB;
+
     Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
     string imagemimetype = ".png";
 
@@ -84,19 +89,29 @@ public class State_Data : MonoBehaviour {
         mpc.Load("http://" + serverName2 + "/" + trackableName + ".mp4" );
     }
 
+    public bool HasTexture(string name)
+    {
+        foreach(var t in textureCache)
+        {
+            if(t.name.ToLower().Contains(name.ToLower())) return true;
+        }    
+        return false;
+    }
+
 
     public Texture2D TextureGet(string name)
     {
         if(textures.ContainsKey(name)) return textures[name];
-
+        foreach(var t in textureCache)
+        {
+            if(t.name.ToLower() == name.ToLower()) return t;
+        }
         string path = System.IO.Path.Combine(Application.persistentDataPath, name + imagemimetype );
         if(!System.IO.File.Exists(path)) {
-            path = System.IO.Path.Combine(Application.streamingAssetsPath, databaseNameRemote + "/" +  name + imagemimetype );
-            if(!System.IO.File.Exists(path)) {
-                Debug.Log("OaklandFence: MaterialGet: failed to load " + path );
-                return defaultTexture;
-            }
+            Debug.Log("OaklandFence: MaterialGet: failed to load " + path );
+            return defaultTexture;
         }
+
         var bytesRead = System.IO.File.ReadAllBytes(path);
         Texture2D texture = new Texture2D (2,2);
         texture.LoadImage (bytesRead);
@@ -104,6 +119,17 @@ public class State_Data : MonoBehaviour {
         return texture;
     }
 
+
+    public string GetPath(params string[] parts)
+    {
+        string output = "";
+        for(int i = 0; i < parts.Length; i++)
+        {
+            if(i == 0) output = parts[i];
+            else output += System.IO.Path.DirectorySeparatorChar + parts[i];
+        }
+        return output;
+    }
     #endregion
 
 
@@ -137,6 +163,9 @@ public class State_Data : MonoBehaviour {
 
         Debug.Log("MaterialsInit()", this);
 
+        var dirSep = System.IO.Path.DirectorySeparatorChar;
+        string otherPath = "";
+
         string path = "";
 
         // Fetch version information
@@ -165,23 +194,39 @@ public class State_Data : MonoBehaviour {
         if(string.IsNullOrEmpty(databaseNameLocal) || databaseNameRemote != databaseNameLocal)
         {
             // check for a local version of the remote name. 
-            path = System.IO.Path.Combine(Application.streamingAssetsPath, "QCAR/" + databaseNameRemote + ".xml");
-            if(System.IO.File.Exists(path))
+
+            if(vuforiaXML.name.Contains(databaseNameRemote))
             {
-                Debug.Log("-- Caching installed DB", this);
+                Debug.Log("Using locally included DB", this);
+                // this is still good. 
+                otherPath = GetPath(Application.persistentDataPath, databaseNameRemote + ".xml");
+                System.IO.File.WriteAllBytes(otherPath, vuforiaXML.bytes);
 
-                // we have a local version of the file here. 
-                var otherPath = System.IO.Path.Combine(Application.persistentDataPath, databaseNameRemote + ".xml");
-                System.IO.File.WriteAllBytes(otherPath, System.IO.File.ReadAllBytes(path));
-
-                path = System.IO.Path.Combine(Application.streamingAssetsPath, "QCAR/" + databaseNameRemote + ".dat");
-                otherPath = System.IO.Path.Combine(Application.persistentDataPath, databaseNameRemote + ".dat");
-                System.IO.File.WriteAllBytes(otherPath ,System.IO.File.ReadAllBytes(path));
-
+                otherPath = GetPath(Application.persistentDataPath, databaseNameRemote + ".dat");
+                System.IO.File.WriteAllBytes(otherPath , vuforiaDB.bytes);
                 databaseNameLocal = databaseNameRemote;
             }
         }
 
+        if(databaseNameRemote != databaseNameLocal) {
+            Debug.Log("Checking online for new DB", this);
+
+            string url = "http://" + serverName + "/" + databaseNameRemote + ".xml";
+            path = System.IO.Path.Combine(Application.persistentDataPath, databaseNameRemote + ".xml");
+            var www = new WWW(url);
+            yield return www;
+            System.IO.File.WriteAllBytes(path,www.bytes);
+            Debug.Log("Caching Trackables - saved database " + path );
+            url = "http://" + serverName + "/" + databaseNameRemote + ".dat";
+            path = System.IO.Path.Combine(Application.persistentDataPath, databaseNameRemote + ".dat");
+            www = new WWW(url);
+            yield return www;
+            System.IO.File.WriteAllBytes(path,www.bytes);
+            Debug.Log("Caching Trackables - saved database " + path );
+            // TODO this would be a good opportunity to flush any previous material cache
+        }
+
+        Debug.Log("Creating tracker and dataset", this);
 
         // Inject into Vuforia
         ObjectTracker tracker = Vuforia.TrackerManager.Instance.GetTracker<Vuforia.ObjectTracker>();
@@ -210,22 +255,6 @@ public class State_Data : MonoBehaviour {
         if(true)
         {
                 
-            if(databaseNameRemote != databaseNameLocal) {
-                string url = "http://" + serverName + "/" + databaseNameRemote + ".xml";
-                path = System.IO.Path.Combine(Application.persistentDataPath, databaseNameRemote + ".xml");
-                var www = new WWW(url);
-                yield return www;
-                System.IO.File.WriteAllBytes(path,www.bytes);
-                Debug.Log("Caching Trackables - saved database " + path );
-                url = "http://" + serverName + "/" + databaseNameRemote + ".dat";
-                path = System.IO.Path.Combine(Application.persistentDataPath, databaseNameRemote + ".dat");
-                www = new WWW(url);
-                yield return www;
-                System.IO.File.WriteAllBytes(path,www.bytes);
-                Debug.Log("Caching Trackables - saved database " + path );
-                // TODO this would be a good opportunity to flush any previous material cache
-            }
-
             // Update material cache?
             {
                 string name,url;
@@ -236,11 +265,10 @@ public class State_Data : MonoBehaviour {
                 for(int i = 0; i < nodes.Count; i++) {
                     name = nodes[i].Attributes["name"].Value;
 
-                    path = System.IO.Path.Combine(Application.streamingAssetsPath, databaseNameRemote + "/" + name + imagemimetype );
-                    if(System.IO.File.Exists(path)) {
-                        continue;
-                    }
+                    // Check the shipped cache for the image
+                    if(HasTexture(name)) continue;
 
+                    // Check the downloaded cache for the image
                     path = System.IO.Path.Combine(Application.persistentDataPath, name + imagemimetype );
                     if(System.IO.File.Exists(path)) {
                         continue;
@@ -264,11 +292,10 @@ public class State_Data : MonoBehaviour {
                 for(int i = 0; i < nodes.Count; i++) {
                     name = nodes[i].Attributes["name"].Value;
 
-                    path = System.IO.Path.Combine(Application.streamingAssetsPath, databaseNameRemote + "/" + name + State_Data.BUMPERPOSTFIX + imagemimetype );
-                    if(System.IO.File.Exists(path)) {
-                        continue;
-                    }
+                    // check the shipped cache for the image
+                    if(HasTexture(name + State_Data.BUMPERPOSTFIX)) continue;
 
+                    // check the downloaded cached for the image
                     path = System.IO.Path.Combine(Application.persistentDataPath, name + State_Data.BUMPERPOSTFIX + imagemimetype );
                     if(System.IO.File.Exists(path)) {
                         continue;

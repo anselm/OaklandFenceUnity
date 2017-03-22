@@ -22,7 +22,7 @@ public class State_Setup : MonoBehaviour {
 
     void Update()
     {
-        if(_finishedSetup || Time.time - _startTime > data.minStartingImageTime)
+        if(Time.time - _startTime > data.minStartingImageTime)
         {
             this.enabled = false;
         }
@@ -57,6 +57,7 @@ public class State_Setup : MonoBehaviour {
 
     void Data_SetupCompleteEvent ()
     { 
+        Debug.Log("Finished Caching all the images.", this);
         _finishedSetup = true;
     }
 

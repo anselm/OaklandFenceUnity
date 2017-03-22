@@ -17,6 +17,7 @@ public class State_ShowPostVideoImage : MonoBehaviour {
         var ratio = tex.width/(float)tex.height;
         data.staticImageMeshRenderer.material.mainTexture = tex;
         data.staticFullScreenQuad.aspect = ratio;
+        data.staticFullScreenQuad.distY = data.staticImageEndDistance;
 
         data.staticImageMeshRenderer.enabled = true;
         data.videoImageMeshRenderer.enabled = false;

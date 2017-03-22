@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+
 using Prime31;
 
 public class State_PostVideoUIHandler : MonoBehaviour {
@@ -13,6 +15,7 @@ public class State_PostVideoUIHandler : MonoBehaviour {
 	// Use this for initialization
 	void OnEnable () {
         Debug.Log("Video UI Handler Start", this);
+        data.postVideoUIGameObject.GetComponent<AspectRatioFitter>().aspectRatio = data.staticFullScreenQuad.aspect;
         data.postVideoUIGameObject.SetActive(true);
 	}
 	
@@ -56,7 +59,7 @@ public class State_PostVideoUIHandler : MonoBehaviour {
     public void JoinButtonClickHandler()
     {
         if(!this.enabled) return;
-        WebViewHelper("Join");
+        WebViewHelper("join");
         Debug.Log("Join", this);
     }
 
