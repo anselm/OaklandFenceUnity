@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Prime31;
 
 [RequireComponent(typeof(State_Data))]
 public class State_Setup : MonoBehaviour {
@@ -21,7 +22,7 @@ public class State_Setup : MonoBehaviour {
 
     void Update()
     {
-        if(_finishedSetup && Time.time - _startTime > data.minStartingImageTime)
+        if(_finishedSetup || Time.time - _startTime > data.minStartingImageTime)
         {
             this.enabled = false;
         }
@@ -34,6 +35,7 @@ public class State_Setup : MonoBehaviour {
 
     void StartHelper()
     {
+
         data.SetupCompleteEvent += Data_SetupCompleteEvent;
         data.SetupData();
 
@@ -49,6 +51,7 @@ public class State_Setup : MonoBehaviour {
         data.blocker.SetActive(true);
 
         _startTime = Time.time;
+
     }
 
 

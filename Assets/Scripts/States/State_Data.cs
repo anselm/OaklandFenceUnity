@@ -31,6 +31,7 @@ public class State_Data : MonoBehaviour {
     public MediaPlayerCtrl mpc;
 
     public GameObject blocker;
+    public Texture2D defaultTexture;
 
     [Header("Camera Movement")]
     public GameObject arGameObject;
@@ -87,12 +88,13 @@ public class State_Data : MonoBehaviour {
     public Texture2D TextureGet(string name)
     {
         if(textures.ContainsKey(name)) return textures[name];
+
         string path = System.IO.Path.Combine(Application.persistentDataPath, name + imagemimetype );
         if(!System.IO.File.Exists(path)) {
-            path = System.IO.Path.Combine(Application.streamingAssetsPath, name + imagemimetype );
+            path = System.IO.Path.Combine(Application.streamingAssetsPath, databaseNameRemote + "/" +  name + imagemimetype );
             if(!System.IO.File.Exists(path)) {
                 Debug.Log("OaklandFence: MaterialGet: failed to load " + path );
-                return new Texture2D(8, 8);// defaultMaterialHandle.mainTexture as Texture2D;
+                return defaultTexture;
             }
         }
         var bytesRead = System.IO.File.ReadAllBytes(path);
@@ -160,64 +162,26 @@ public class State_Data : MonoBehaviour {
         // Update database?
         Debug.Log("DB Local: " + databaseNameLocal + " BD Remote: " + databaseNameRemote, this);
 
-        if(databaseNameRemote != databaseNameLocal) {
-            string url = "http://" + serverName + "/" + databaseNameRemote + ".xml";
-            path = System.IO.Path.Combine(Application.persistentDataPath, databaseNameRemote + ".xml");
-            var www = new WWW(url);
-            yield return www;
-            System.IO.File.WriteAllBytes(path,www.bytes);
-            Debug.Log("Caching Trackables - saved database " + path );
-            url = "http://" + serverName + "/" + databaseNameRemote + ".dat";
-            path = System.IO.Path.Combine(Application.persistentDataPath, databaseNameRemote + ".dat");
-            www = new WWW(url);
-            yield return www;
-            System.IO.File.WriteAllBytes(path,www.bytes);
-            Debug.Log("Caching Trackables - saved database " + path );
-            // TODO this would be a good opportunity to flush any previous material cache
-        }
-
-        // Update material cache?
+        if(string.IsNullOrEmpty(databaseNameLocal) || databaseNameRemote != databaseNameLocal)
         {
-            string name,url;
-            XmlDocument xml = new XmlDocument();
-            path = System.IO.Path.Combine(Application.persistentDataPath, databaseNameRemote + ".xml");
-            xml.Load(path);
-            XmlNodeList nodes = xml.DocumentElement.SelectNodes("/QCARConfig/Tracking/ImageTarget");
-            for(int i = 0; i < nodes.Count; i++) {
-                name = nodes[i].Attributes["name"].Value;
-                path = System.IO.Path.Combine(Application.persistentDataPath, name + imagemimetype );
-                if(System.IO.File.Exists(path)) {
-                    continue;
-                }
-                url = "http://" + serverName + "/" + name + imagemimetype;
-                var www = new WWW(url);
-                yield return www;
-                System.IO.File.WriteAllBytes(path,www.bytes);
-                Debug.Log("Cached Trackable: saved image " + name );
+            // check for a local version of the remote name. 
+            path = System.IO.Path.Combine(Application.streamingAssetsPath, "QCAR/" + databaseNameRemote + ".xml");
+            if(System.IO.File.Exists(path))
+            {
+                Debug.Log("-- Caching installed DB", this);
+
+                // we have a local version of the file here. 
+                var otherPath = System.IO.Path.Combine(Application.persistentDataPath, databaseNameRemote + ".xml");
+                System.IO.File.WriteAllBytes(otherPath, System.IO.File.ReadAllBytes(path));
+
+                path = System.IO.Path.Combine(Application.streamingAssetsPath, "QCAR/" + databaseNameRemote + ".dat");
+                otherPath = System.IO.Path.Combine(Application.persistentDataPath, databaseNameRemote + ".dat");
+                System.IO.File.WriteAllBytes(otherPath ,System.IO.File.ReadAllBytes(path));
+
+                databaseNameLocal = databaseNameRemote;
             }
         }
 
-        // Update material cache for bumpers?
-        {
-            string name,url;
-            XmlDocument xml = new XmlDocument();
-            path = System.IO.Path.Combine(Application.persistentDataPath, databaseNameRemote + ".xml");
-
-            xml.Load(path);
-            XmlNodeList nodes = xml.DocumentElement.SelectNodes("/QCARConfig/Tracking/ImageTarget");
-            for(int i = 0; i < nodes.Count; i++) {
-                name = nodes[i].Attributes["name"].Value;
-                path = System.IO.Path.Combine(Application.persistentDataPath, name + "-bumper" + imagemimetype );
-                if(System.IO.File.Exists(path)) {
-                    continue;
-                }
-                url = "http://" + serverName + "/" + name + BUMPERPOSTFIX + imagemimetype;
-                var www = new WWW(url);
-                yield return www;
-                System.IO.File.WriteAllBytes(path,www.bytes);
-                Debug.Log("Cached Trackable: saved image " + name );
-            }
-        }
 
         // Inject into Vuforia
         ObjectTracker tracker = Vuforia.TrackerManager.Instance.GetTracker<Vuforia.ObjectTracker>();
@@ -240,6 +204,82 @@ public class State_Data : MonoBehaviour {
             tb.gameObject.name = ++counter + ":DynamicImageTarget-" + tb.TrackableName;
             //tb.gameObject.AddComponent<DefaultTrackableEventHandler>();
             //tb.gameObject.AddComponent<TurnOffBehaviour>();
+        }
+
+
+        if(true)
+        {
+                
+            if(databaseNameRemote != databaseNameLocal) {
+                string url = "http://" + serverName + "/" + databaseNameRemote + ".xml";
+                path = System.IO.Path.Combine(Application.persistentDataPath, databaseNameRemote + ".xml");
+                var www = new WWW(url);
+                yield return www;
+                System.IO.File.WriteAllBytes(path,www.bytes);
+                Debug.Log("Caching Trackables - saved database " + path );
+                url = "http://" + serverName + "/" + databaseNameRemote + ".dat";
+                path = System.IO.Path.Combine(Application.persistentDataPath, databaseNameRemote + ".dat");
+                www = new WWW(url);
+                yield return www;
+                System.IO.File.WriteAllBytes(path,www.bytes);
+                Debug.Log("Caching Trackables - saved database " + path );
+                // TODO this would be a good opportunity to flush any previous material cache
+            }
+
+            // Update material cache?
+            {
+                string name,url;
+                XmlDocument xml = new XmlDocument();
+                path = System.IO.Path.Combine(Application.persistentDataPath, databaseNameRemote + ".xml");
+                xml.Load(path);
+                XmlNodeList nodes = xml.DocumentElement.SelectNodes("/QCARConfig/Tracking/ImageTarget");
+                for(int i = 0; i < nodes.Count; i++) {
+                    name = nodes[i].Attributes["name"].Value;
+
+                    path = System.IO.Path.Combine(Application.streamingAssetsPath, databaseNameRemote + "/" + name + imagemimetype );
+                    if(System.IO.File.Exists(path)) {
+                        continue;
+                    }
+
+                    path = System.IO.Path.Combine(Application.persistentDataPath, name + imagemimetype );
+                    if(System.IO.File.Exists(path)) {
+                        continue;
+                    }
+                    url = "http://" + serverName + "/" + name + imagemimetype;
+                    var www = new WWW(url);
+                    yield return www;
+                    System.IO.File.WriteAllBytes(path,www.bytes);
+                    Debug.Log("Cached Trackable: saved image " + name );
+                }
+            }
+
+            // Update material cache for bumpers?
+            {
+                string name,url;
+                XmlDocument xml = new XmlDocument();
+                path = System.IO.Path.Combine(Application.persistentDataPath, databaseNameRemote + ".xml");
+
+                xml.Load(path);
+                XmlNodeList nodes = xml.DocumentElement.SelectNodes("/QCARConfig/Tracking/ImageTarget");
+                for(int i = 0; i < nodes.Count; i++) {
+                    name = nodes[i].Attributes["name"].Value;
+
+                    path = System.IO.Path.Combine(Application.streamingAssetsPath, databaseNameRemote + "/" + name + State_Data.BUMPERPOSTFIX + imagemimetype );
+                    if(System.IO.File.Exists(path)) {
+                        continue;
+                    }
+
+                    path = System.IO.Path.Combine(Application.persistentDataPath, name + State_Data.BUMPERPOSTFIX + imagemimetype );
+                    if(System.IO.File.Exists(path)) {
+                        continue;
+                    }
+                    url = "http://" + serverName + "/" + name + BUMPERPOSTFIX + imagemimetype;
+                    var www = new WWW(url);
+                    yield return www;
+                    System.IO.File.WriteAllBytes(path,www.bytes);
+                    Debug.Log("Cached Trackable: saved image " + name );
+                }
+            }
         }
 
         if(SetupCompleteEvent != null) SetupCompleteEvent.Invoke();
