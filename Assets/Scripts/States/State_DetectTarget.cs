@@ -11,16 +11,20 @@ public class State_DetectTarget : MonoBehaviour {
     State_ShowTargetImage nextState;
 
     IList<TrackableBehaviour> activeTrackables;
-    StateManager sm;
+    //StateManager sm;
 
 
     [SerializeField]
     bool breakOnDetection = false;
 
+
+    int minFramesOfDetection = 10;
+    int _counter;
+
     void OnEnable()
     {
         data.Reset();
-        sm = TrackerManager.Instance.GetStateManager();
+        //sm = TrackerManager.Instance.GetStateManager();
     }
 	
 	// Update is called once per frame
@@ -28,12 +32,25 @@ public class State_DetectTarget : MonoBehaviour {
 
         data.zoomCamera.fieldOfView = data.arCamera.fieldOfView;
 
-        activeTrackables = (IList<TrackableBehaviour>) sm.GetActiveTrackableBehaviours();
+        activeTrackables = data.GetActiveTrackables();// (IList<TrackableBehaviour>) sm.GetActiveTrackableBehaviours();
 
         if(activeTrackables.Count < 1) return;
 
         var trackable = activeTrackables[0];
 
+        if(trackable.TrackableName == data.trackableName)
+        {
+            _counter--;
+            if(_counter < 0)
+            {
+                this.enabled = false;
+            }
+            return;
+        }
+        else
+        {
+            _counter = minFramesOfDetection;
+        }
 
         var image = data.TextureGet(trackable.TrackableName);
 
@@ -42,9 +59,9 @@ public class State_DetectTarget : MonoBehaviour {
         data.trackableAspectRatio = image.width/(float)image.height;
         data.trackableName = trackable.TrackableName;
 
-        if(breakOnDetection) Debug.Break();
-
-        this.enabled = false;
+//        if(breakOnDetection) Debug.Break();
+//
+//        this.enabled = false;
 	}
 
     void OnDisable()

@@ -14,6 +14,8 @@ public class State_ZoomInOnTarget : MonoBehaviour {
     Vector3 _startPos;
     float _currentPercentage;
 
+    public bool fullDetach = false;
+
 
 	// Use this for initialization
 	void OnEnable () {
@@ -24,12 +26,13 @@ public class State_ZoomInOnTarget : MonoBehaviour {
 
         _startRot = data.arGameObject.transform.rotation;
         _startPos = data.arGameObject.transform.position;
-        data.staticFullScreenQuad.distY = data.staticImageStartDistance;
+        //data.staticFullScreenQuad.distY = data.staticImageStartDistance;
 
         data.zoomCamera.gameObject.transform.rotation = _startRot;
         data.zoomCamera.gameObject.transform.position = _startPos;
 
-        data.LoadMovie();
+        this.nextState.enabled = true;
+        //data.LoadMovie();
 
         _currentFrames = 0;
 	}
@@ -39,16 +42,24 @@ public class State_ZoomInOnTarget : MonoBehaviour {
 
         _currentPercentage = _currentFrames/(float)data.framesForZoom;
 
-        data.zoomCamera.gameObject.transform.rotation = Quaternion.Slerp(_startRot, data.endPosition.rotation, _currentPercentage);
-        data.zoomCamera.gameObject.transform.position = Vector3.Lerp(_startPos, data.endPosition.position, _currentPercentage);
+        if(fullDetach)
+        {
+            data.zoomCamera.gameObject.transform.rotation = Quaternion.Slerp(_startRot, data.endPosition.rotation, _currentPercentage);
+            data.zoomCamera.gameObject.transform.position = Vector3.Lerp(_startPos, data.endPosition.position, _currentPercentage);
+        }
+        else
+        {
+            data.zoomCamera.gameObject.transform.rotation = Quaternion.Slerp(data.arGameObject.transform.rotation, data.endPosition.rotation, _currentPercentage);
+            data.zoomCamera.gameObject.transform.position = Vector3.Lerp(data.arGameObject.transform.position, data.endPosition.position, _currentPercentage);
+        }
         data.staticFullScreenQuad.distY = Mathf.Lerp(data.staticImageStartDistance, data.staticImageEndDistance, _currentPercentage);
         data.videoFullScreenQuad.distY = data.staticFullScreenQuad.distY + data.videoImageDistanceOffset;
 
         // Get to the video playback asap. even if we are still zooming!
-        if(data.mpc.GetCurrentState() == MediaPlayerCtrl.MEDIAPLAYER_STATE.READY)
-        {
-            this.nextState.enabled = true;
-        }
+//        if(data.mpc.GetCurrentState() == MediaPlayerCtrl.MEDIAPLAYER_STATE.READY)
+//        {
+//            this.nextState.enabled = true;
+//        }
 
         _currentFrames++;
 

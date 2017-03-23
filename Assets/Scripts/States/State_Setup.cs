@@ -18,6 +18,7 @@ public class State_Setup : MonoBehaviour {
     {
         Invoke("StartHelper", 0.1f);
         _startTime = Time.time;
+
 	}
 
     void Update()
@@ -30,11 +31,13 @@ public class State_Setup : MonoBehaviour {
 
     void OnDisable()
     {
+        SkipIntroButtonClickEvent();
         nextState.enabled = true;
     }
 
     void StartHelper()
     {
+        data.skipIntroGameObject.SetActive(true);
 
         data.SetupCompleteEvent += Data_SetupCompleteEvent;
         data.SetupData();
@@ -55,6 +58,12 @@ public class State_Setup : MonoBehaviour {
 
     }
 
+    public void SkipIntroButtonClickEvent()
+    {
+        data.skipIntroGameObject.SetActive(false);
+        data.staticImageMeshRenderer.enabled = false;
+        data.blocker.SetActive(false);
+    }
 
     void Data_SetupCompleteEvent ()
     { 

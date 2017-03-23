@@ -66,6 +66,7 @@ public class State_Data : MonoBehaviour {
     [Tooltip("How long to keep the start of app GFX up.")]
     public float minStartingImageTime = 5f;
     public GameObject postVideoUIGameObject;
+    public GameObject skipIntroGameObject;
 
     [Tooltip("Images which are going to be used by the DB. Can be updated as the app is updated. Is superseeded when a new BD is uploaded to Amazon, although if the images are named the same, will keep using them.")]
     public Texture2D[] textureCache;
@@ -81,6 +82,10 @@ public class State_Data : MonoBehaviour {
     string databaseNameLocal = "";
     string databaseNameRemote = "";
 
+    StateManager sm;
+
+
+
     void OnValidate()
     {
         SetupRelationships();
@@ -93,8 +98,16 @@ public class State_Data : MonoBehaviour {
     public void SetupData()
     {
         Debug.Log("SetupData", this);
+
+        sm = TrackerManager.Instance.GetStateManager();
+
         SetupRelationships();
         StartCoroutine(MaterialsInit());
+    }
+
+    public IList<TrackableBehaviour> GetActiveTrackables()
+    {
+        return (IList<TrackableBehaviour>) sm.GetActiveTrackableBehaviours();
     }
 
     public void Reset()
