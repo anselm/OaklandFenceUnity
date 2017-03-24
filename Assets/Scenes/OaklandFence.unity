@@ -162,6 +162,10 @@ Prefab:
       propertyPath: arCamera
       value: 
       objectReference: {fileID: 1159776292}
+    - target: {fileID: 1902249109578390, guid: 8a17ccc97249a4aa99346fd379d5ea41, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 8a17ccc97249a4aa99346fd379d5ea41, type: 2}
   m_IsPrefabParent: 0

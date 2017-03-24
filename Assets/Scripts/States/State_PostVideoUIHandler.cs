@@ -17,11 +17,7 @@ public class State_PostVideoUIHandler : MonoBehaviour {
         Debug.Log("Video UI Handler Start", this);
         data.postVideoUIGameObject.GetComponent<AspectRatioFitter>().aspectRatio = data.staticFullScreenQuad.aspect;
         data.postVideoUIGameObject.SetActive(true);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+
 	}
 
     void OnDisable()
@@ -71,8 +67,15 @@ public class State_PostVideoUIHandler : MonoBehaviour {
         Debug.Log("Home", this);
 
         // hide everything. 
-        data.Reset();
+        //data.Reset();
+        data.HideVideoImage();
+        data.HideStaticImage();
+        data.HideBlockerImage();
+
+        data.postVideoUIGameObject.SetActive(false);
+
         homeState.enabled = true;
+
         this.enabled = false;
     }
 
@@ -83,7 +86,7 @@ public class State_PostVideoUIHandler : MonoBehaviour {
 
         Debug.Log("Replay", this);
 
-        data.staticImageMeshRenderer.enabled = false;
+        data.HideStaticImage(false);
         data.postVideoUIGameObject.SetActive(false);
 
         showMovieState.enabled = true;

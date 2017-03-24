@@ -34,6 +34,8 @@ public class State_ZoomInOnTarget : MonoBehaviour {
         this.nextState.enabled = true;
         //data.LoadMovie();
 
+        data.zoomInComplete = false;
+
         _currentFrames = 0;
 	}
 	
@@ -76,6 +78,9 @@ public class State_ZoomInOnTarget : MonoBehaviour {
         //data.blocker.SetActive(true);
 
         this.nextState.enabled = true;
+        data.zoomInComplete = true;
+
+        data.ShowBlockerImage();
 
         Debug.Log("Zoom In State End", this);
     }

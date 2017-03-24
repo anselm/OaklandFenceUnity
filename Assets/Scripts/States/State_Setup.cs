@@ -51,8 +51,8 @@ public class State_Setup : MonoBehaviour {
         data.staticFullScreenQuad.aspect = data.startingTexture.width/(float)data.startingTexture.height;
         data.staticFullScreenQuad.distY = data.staticImageEndDistance;
 
-        data.staticImageMeshRenderer.enabled = true;
-        data.blocker.SetActive(true);
+        data.ShowStaticImage();
+        data.ShowBlockerImage();
 
         _startTime = Time.time;
 
@@ -61,8 +61,8 @@ public class State_Setup : MonoBehaviour {
     public void SkipIntroButtonClickEvent()
     {
         data.skipIntroGameObject.SetActive(false);
-        data.staticImageMeshRenderer.enabled = false;
-        data.blocker.SetActive(false);
+        data.HideStaticImage();
+        data.HideBlockerImage();
     }
 
     void Data_SetupCompleteEvent ()

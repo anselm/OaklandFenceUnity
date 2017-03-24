@@ -10,14 +10,17 @@ public class State_ShowTargetImage : MonoBehaviour {
 
     public int debugMinCounter = 10;
     int _counter;
+    bool _isPlaying = false;
 
+    int _isPlayingCounter = 0;
 	// Use this for initialization
 	void OnEnable () {
         
         data.staticImageMeshRenderer.material.mainTexture = data.TextureGet(data.trackableName);
         data.staticFullScreenQuad.aspect = data.trackableAspectRatio;
         data.staticFullScreenQuad.distY = data.staticImageStartDistance;
-        data.staticImageMeshRenderer.enabled = true;
+
+        data.ShowStaticImage(true);
 
         data.LoadMovie();
 
@@ -26,6 +29,7 @@ public class State_ShowTargetImage : MonoBehaviour {
 
         data.zoomCamera.enabled = true;
         _counter = debugMinCounter;
+        _isPlaying = false;
 	}
 	
     void Update()
@@ -34,22 +38,37 @@ public class State_ShowTargetImage : MonoBehaviour {
         data.zoomCamera.gameObject.transform.position = data.arCamera.transform.position;
 
         // if we loose the target, hide and go back to target seeking mode. 
-        if(data.GetActiveTrackables().Count < 1)
+        if(data.GetActiveTrackables().Count < 1 && _isPlayingCounter == 0)
         {
             // lost the target before we got all setup, bail!
-
-            data.staticImageMeshRenderer.enabled = false;
+            data.HideStaticImage();
             data.zoomCamera.enabled = false;
 
+            data.mpc.Stop();
+            data.mpc.UnLoad();
 
             this.prevState.enabled = true;
             this.enabled = false;
         }
 
-        if(data.mpc.GetCurrentState() == MediaPlayerCtrl.MEDIAPLAYER_STATE.READY || _counter-- < 0)
+        if(data.mpc.GetCurrentState() == MediaPlayerCtrl.MEDIAPLAYER_STATE.READY && !_isPlaying)
         {
-            nextState.enabled = true;
-            this.enabled = false;
+            data.mpc.OnVideoFirstFrameReady = OnVideoFirstFrameReadyCallback;
+            data.mpc.Play();
+            _isPlaying = true;
+            //nextState.enabled = true;
+            //this.enabled = false;
+        }
+
+        if(_isPlayingCounter > 0)
+        {
+            _isPlayingCounter--;
+
+            if(_isPlayingCounter <= 0)
+            {
+                this.enabled = false;
+                this.nextState.enabled = true;
+            }
         }
     }
 
@@ -66,6 +85,13 @@ public class State_ShowTargetImage : MonoBehaviour {
     {
         UpdateReferences();
     }
+
+    void OnVideoFirstFrameReadyCallback()
+    {
+        data.mpc.OnVideoFirstFrameReady = null;
+        _isPlayingCounter = data.prePlaybVideoFrameCount;
+    }
+
 
     void UpdateReferences()
     {

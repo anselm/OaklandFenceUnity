@@ -9,7 +9,6 @@ public class State_ShowMovie : MonoBehaviour {
     [SerializeField]
     State_ShowPostVideoImage nextState;
 
-    int alphaCounter = 0;
 
     #region UNITY
 
@@ -25,6 +24,11 @@ public class State_ShowMovie : MonoBehaviour {
         {
             OnReadyCallback();
         }
+        else if(currentState == MediaPlayerCtrl.MEDIAPLAYER_STATE.PLAYING)
+        {
+            OnReadyCallback();
+            OnVideoFirstFrameReadyCallback();
+        }
         else
         {
             if(currentState == MediaPlayerCtrl.MEDIAPLAYER_STATE.STOPPED || 
@@ -33,6 +37,7 @@ public class State_ShowMovie : MonoBehaviour {
                 Debug.Log("Setup for replay");
                 data.mpc.SeekTo(0);
                 data.mpc.Stop();
+                data.mpc.Play();
 
                 OnReadyCallback();
                 Invoke("OnVideoFirstFrameReadyCallback", 1f);
@@ -46,20 +51,6 @@ public class State_ShowMovie : MonoBehaviour {
 	}
 	
 
-    void Update()
-    {
-        if(alphaCounter > 0)
-        {
-            alphaCounter--;
-            var colour = data.staticImageMeshRenderer.material.color;
-            colour.a = alphaCounter/(float)data.framesForAlphaFade;
-            data.staticImageMeshRenderer.material.color = colour;
-            if(alphaCounter == 0)
-            {
-                data.staticImageMeshRenderer.enabled = false;
-            }
-        }    
-    }
 
 
     void OnDisable()
@@ -72,9 +63,6 @@ public class State_ShowMovie : MonoBehaviour {
         data.mpc.OnReady = null;
         data.mpc.OnEnd = null;
 
-        data.staticImageMeshRenderer.material.color = Color.white;
-
-        data.blocker.SetActive(true);
         data.videoSkipGameObject.SetActive(false);
 
         nextState.enabled = true;
@@ -98,6 +86,10 @@ public class State_ShowMovie : MonoBehaviour {
     
         if(!this.enabled) return;
 
+        data.mpc.OnEnd = null;
+        data.mpc.OnReady = null;
+        data.mpc.OnVideoFirstFrameReady = null;
+
         Debug.Log("Skip Button Clicked", this);
         OnEndCallback();
     }
@@ -109,10 +101,9 @@ public class State_ShowMovie : MonoBehaviour {
 
         Debug.Log("Video First Frame Ready", this);
         data.mpc.OnVideoFirstFrameReady = null;
-        data.videoImageMeshRenderer.enabled = true;
-        alphaCounter = data.framesForAlphaFade;
 
-        Invoke("ShowBlocker", data.delayToShowBlocker);
+        data.ShowVideoImage(false);
+        data.HideStaticImage();
 
         data.videoSkipGameObject.SetActive(true);
     }
@@ -126,7 +117,7 @@ public class State_ShowMovie : MonoBehaviour {
         data.mpc.OnReady = null;
         data.mpc.OnEnd = OnEndCallback;
         data.videoFullScreenQuad.aspect = (float)data.mpc.GetVideoWidth()/(float)data.mpc.GetVideoHeight();
-        data.mpc.Play(); 
+        //data.mpc.Play(); 
 
         // TODO remove, here for debugging
         //Invoke("OnEndCallback", 8f);
@@ -141,12 +132,6 @@ public class State_ShowMovie : MonoBehaviour {
         this.enabled = false;
     }
 
-    void ShowBlocker()
-    {
-        if(!this.enabled) return;
-
-        data.blocker.SetActive(true);    
-    }
 
     void UpdateReferences()
     {

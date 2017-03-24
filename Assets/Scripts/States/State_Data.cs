@@ -27,7 +27,11 @@ public class State_Data : MonoBehaviour {
     public MeshRenderer staticImageMeshRenderer;
     public FullScreenQuad staticFullScreenQuad;
 
+    public GameObject blocker;
+    public MeshRenderer blockerMeshRender;
+
     public Texture2D defaultTexture;
+    public bool zoomInComplete = false;
 
     [Header("Video")]
 
@@ -38,8 +42,8 @@ public class State_Data : MonoBehaviour {
     public float videoImageDistanceOffset = 1;
 
     public MediaPlayerCtrl mpc;
+    public int prePlaybVideoFrameCount = 30;
 
-    public GameObject blocker;
     [Tooltip("How long, once the video is playing, do we wait to show the blocker. Tried to time it for when the video switches aspect ratios.")]
     public float delayToShowBlocker = .5f;
     public GameObject videoSkipGameObject;
@@ -94,6 +98,75 @@ public class State_Data : MonoBehaviour {
 
 
     #region PUBLIC API
+
+    public void ShowStaticImage(bool fade = true)
+    {
+        Debug.Log("ShowStaticImage " + fade, this);
+
+        if(!fade) 
+        {
+            staticImageMeshRenderer.enabled = true;
+            var colour = staticImageMeshRenderer.material.color;
+            colour.a = 1;
+            staticImageMeshRenderer.material.color = colour;
+        }
+        else FadeMeshRenderer(staticImageMeshRenderer, true);
+    }
+
+    public void HideStaticImage(bool fade = true)
+    {
+        Debug.Log("HideStaticImage " + fade, this);
+        if(!fade) staticImageMeshRenderer.enabled = false;
+        FadeMeshRenderer(staticImageMeshRenderer, false);
+        
+    }
+
+    public void ShowVideoImage(bool fade = true)
+    {
+        Debug.Log("ShowVideoImage " + fade, this);
+        if(!fade)
+        {
+            var colour = videoImageMeshRenderer.material.color;
+            colour.a = 1;
+            videoImageMeshRenderer.material.color = colour;
+            videoImageMeshRenderer.enabled = true;
+        }
+        else FadeMeshRenderer(videoImageMeshRenderer, true);
+    }
+
+    public void HideVideoImage(bool fade = true)
+    {
+        Debug.Log("HideVideoImage " + fade, this);
+        FadeMeshRenderer(videoImageMeshRenderer, false);
+    }
+
+
+    public void ShowBlockerImage(bool fade = true)
+    {
+        Debug.Log("ShowBlockerImage " + fade, this);
+        if(!fade) 
+        {
+            blockerMeshRender.enabled = true;
+            var colour = blockerMeshRender.material.color;
+            colour.a = 1;
+            blockerMeshRender.material.color = colour;
+        }
+        else FadeMeshRenderer(blockerMeshRender, true);
+    }
+
+    public void HideBlockerImage(bool fade = true)
+    {
+        Debug.Log("HideBlockerImage " + fade, this);
+        if(!fade) blockerMeshRender.enabled = false;
+        FadeMeshRenderer(blockerMeshRender, false);
+
+    }
+
+
+    void FadeMeshRenderer(MeshRenderer renderer, bool fadeUp)
+    {
+        StartCoroutine(FadeMeshRendererHelper(renderer, fadeUp));
+    }
 
     public void SetupData()
     {
@@ -163,9 +236,43 @@ public class State_Data : MonoBehaviour {
     }
     #endregion
 
+    IEnumerator FadeMeshRendererHelper(MeshRenderer renderer, bool fadeUp)
+    {
+        var material = renderer.material;
+
+        if(!fadeUp && (material.color.a < 0.001f || !renderer.enabled))
+        {
+            Debug.Log("Already hidden? " + renderer, renderer);
+
+            // already hidden. 
+            renderer.enabled = false;
+            var colour = material.color;
+            colour.a = 0;
+            material.color = colour;
+            yield break;
+        }
+
+        renderer.enabled = true;
+
+        int counter = framesForAlphaFade;
+        float a;
+
+        while(counter-- > 0)
+        {
+            var colour = material.color;
+            a = counter/(float)framesForAlphaFade;
+            colour.a = (fadeUp ? (1 - a) : a);
+            material.color = colour;
+            yield return null;
+        }  
+
+        if(!fadeUp) renderer.enabled = false;
+    }
+
 
     void SetupRelationships()
     {
+        Debug.LogWarning("SETUP/RESET", this);
 
         staticImageMeshRenderer = staticImage.GetComponent<MeshRenderer>();
         staticFullScreenQuad = staticImage.GetComponent<FullScreenQuad>();
@@ -179,7 +286,8 @@ public class State_Data : MonoBehaviour {
         mpc.Stop();
         mpc.UnLoad();
 
-        blocker.SetActive(false);
+        blockerMeshRender.enabled = false;
+
         postVideoUIGameObject.SetActive(false);
         videoSkipGameObject.SetActive(false);
           

@@ -23,7 +23,7 @@ public class State_DetectTarget : MonoBehaviour {
 
     void OnEnable()
     {
-        data.Reset();
+        //data.Reset();
         //sm = TrackerManager.Instance.GetStateManager();
     }
 	

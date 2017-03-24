@@ -19,8 +19,10 @@ public class State_ShowPostVideoImage : MonoBehaviour {
         data.staticFullScreenQuad.aspect = ratio;
         data.staticFullScreenQuad.distY = data.staticImageEndDistance;
 
-        data.staticImageMeshRenderer.enabled = true;
-        data.videoImageMeshRenderer.enabled = false;
+        data.ShowStaticImage();
+        data.HideVideoImage();
+
+
         this.enabled = false;
         nextState.enabled = true;
 	}
