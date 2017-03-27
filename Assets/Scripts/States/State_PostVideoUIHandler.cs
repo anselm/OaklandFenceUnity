@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+#if UNITY_ANDROID
 using Prime31;
+#endif
 
 public class State_PostVideoUIHandler : MonoBehaviour {
 
@@ -99,7 +101,12 @@ public class State_PostVideoUIHandler : MonoBehaviour {
     {
         string url = string.Format("http://{0}/{1}.html", data.serverName, loc);
         Debug.Log("URL: " + url, this);
+
+        #if UNITY_ANDROID
         EtceteraAndroid.showWebView(url);
+        #else
+        Application.OpenURL(url);
+        #endif
     }
 
     void UpdateReferences()

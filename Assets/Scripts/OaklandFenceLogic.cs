@@ -6,8 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 
-using Prime31;
-
 namespace Vuforia {
 
 	public class OaklandFenceLogic : MonoBehaviour {
@@ -79,49 +77,6 @@ namespace Vuforia {
 		void Update () {
 			HandleVuforiaRecognition();
 		}
-
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// Public API 
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        public void SupportButtonClickHandler()
-        {
-            EtceteraAndroid.showWebView( "http://" + serverName + "/support.html" );
-            Debug.Log("Support", this);
-        }
-
-        public void LearnMoreButtonClickHandler()
-        {
-            EtceteraAndroid.showWebView( "http://" + serverName +"/learn.html" );
-            Debug.Log("Learn", this);
-        }
-
-        public void JoinButtonClickHandler()
-        {
-            EtceteraAndroid.showWebView("http://" + serverName + "/join.html");
-            Debug.Log("Join", this);
-        }
-
-        public void HomeButtonClickHandler()
-        {
-            // Clear everything from the screen.. .
-            Debug.Log("Home", this);
-
-            stateSet(4,bumperMaterialHandle,1);
-            OnEndBumperFinishEvent.Invoke();
-        }
-
-
-        public void ReplayButtonClickHandler()
-        {
-            Debug.Log("Replay", this);
-
-            videoPlayerHelper.Load("http://" + serverName2 + "/" + playName + ".mp4" );
-
-            OnEndBumperFinishEvent.Invoke();
-            stateSet(5, videoMaterialHandle, 1);
-        }
 
 
 

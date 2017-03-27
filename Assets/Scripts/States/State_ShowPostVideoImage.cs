@@ -13,7 +13,10 @@ public class State_ShowPostVideoImage : MonoBehaviour {
 	void OnEnable () {
         Debug.Log("Show Post Image Start", this);
 
-        var tex = data.TextureGet(data.trackableName + State_Data.BUMPERPOSTFIX);
+        // Old way, when each bumper was dynamic. 
+        //var tex = data.TextureGet(data.trackableName + State_Data.BUMPERPOSTFIX);
+
+        var tex = data.cherryPixBumper;
         var ratio = tex.width/(float)tex.height;
         data.staticImageMeshRenderer.material.mainTexture = tex;
         data.staticFullScreenQuad.aspect = ratio;

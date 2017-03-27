@@ -32,6 +32,7 @@ public class State_Data : MonoBehaviour {
 
     public Texture2D defaultTexture;
     public bool zoomInComplete = false;
+    public Texture2D cherryPixBumper;
 
     [Header("Video")]
 
@@ -420,7 +421,11 @@ public class State_Data : MonoBehaviour {
                 }
             }
 
+
+            // CherryPix version doesn't have dynamic bumpers, only uses a static image, so we don't
+            // need to download/cache the bumper images. 
             // Update material cache for bumpers?
+            if(false)
             {
                 string name,url;
                 XmlDocument xml = new XmlDocument();
